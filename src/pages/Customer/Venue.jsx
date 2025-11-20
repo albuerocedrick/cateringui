@@ -130,7 +130,7 @@ const Venue = () => {
       <header className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-stone-900 flex flex-col justify-center items-center">
         <div className="absolute inset-0 w-full h-full z-0">
           <img 
-            src="https://images.pexels.com/photos/2034851/pexels-photo-2034851.jpeg?auto=compress&cs=tinysrgb&w=1600" 
+            src="https://images.pexels.com/photos/3835638/pexels-photo-3835638.jpeg?auto=compress&cs=tinysrgb&w=1600" 
             alt="Venue Hall" 
             className="w-full h-full object-cover opacity-50 animate-[pulse_15s_infinite_ease-in-out]"
           />
