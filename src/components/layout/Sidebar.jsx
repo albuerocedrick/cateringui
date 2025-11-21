@@ -1,93 +1,122 @@
-// src/components/layout/Sidebar.jsx
-import { NavLink } from "react-router-dom";
-import { CalendarIcon, UsersIcon, ClipboardListIcon, CubeIcon, CashIcon } from "@heroicons/react/24/outline";
+// src/components/customer/layout/Sidebar.jsx
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; // 1. Import Router Hooks
+import { 
+  LayoutGrid, Calendar, Users, CheckSquare, MapPin, 
+  Package, DollarSign, TrendingUp, ChefHat, ChevronLeft, ChevronRight
+} from 'lucide-react';
 
-const SectionTitle = ({ children }) => (
-  <p className="mt-6 mb-2 px-3 text-xs font-semibold text-gray-500 uppercase">{children}</p>
-);
-
-export default function Sidebar() {
-  const menu = [
-    { name: "Dashboard", path: "/", icon: null },
+const Sidebar = ({ sidebarOpen, setSidebarOpen, theme }) => {
+  const navigate = useNavigate(); // Hook for navigation
+  const location = useLocation(); // Hook to get current URL
+  
+  // 2. Map your folder structure to URL paths
+  const menuGroups = [
     {
-      name: "Events",
-      children: [
-        { name: "Calendar", path: "/events/calendar" },
-        { name: "Client Records", path: "/events/clients" },
-        { name: "Task Manager", path: "/events/tasks" },
-        { name: "Venue Management", path: "/events/venues" },
-        { name: "Staff Scheduling", path: "/events/staff" },
-        { name: "QR Codes", path: "/events/qr" },
+      label: "Management",
+      items: [
+        // Pointing to src/pages/Dashboard/Dashboard.jsx
+        { id: 'Overview', icon: LayoutGrid, label: 'Dashboard', path: '/dashboard' },
+        // Pointing to src/pages/Events/Calendar.jsx
+        { id: 'Calendar', icon: Calendar, label: 'Events Calendar', path: '/events/calendar' },
+        // Assuming src/pages/Customer or generic Clients page
+        { id: 'Clients', icon: Users, label: 'Client Records', path: '/clients' },
+        { id: 'Tasks', icon: CheckSquare, label: 'Task Manager', path: '/tasks' },
       ]
     },
     {
-      name: "Catering",
-      children: [
-        { name: "Menu & Recipes", path: "/catering/menu" },
-        { name: "Dietary Notes", path: "/catering/dietary" },
-        { name: "Kitchen Prep Sheet", path: "/catering/prep" },
-        { name: "Order Checklist", path: "/catering/checklist" },
+      label: "Operations",
+      items: [
+        { id: 'Kitchen', icon: ChefHat, label: 'Kitchen & Prep', path: '/kitchen' },
+        // Pointing to src/pages/Inventory
+        { id: 'Inventory', icon: Package, label: 'Inventory', path: '/inventory/inventory' },
+        { id: 'Venue', icon: MapPin, label: 'Venue Status', path: '/venue-status' },
       ]
     },
     {
-      name: "Inventory",
-      children: [
-        { name: "Stocks", path: "/inventory/stocks" },
-        { name: "Low Stock Alerts", path: "/inventory/alerts" },
-        { name: "Purchase Orders", path: "/inventory/po" },
-        { name: "Equipment Location", path: "/inventory/equipment" },
-      ]
-    },
-    {
-      name: "Finance",
-      children: [
-        { name: "Quotes", path: "/finance/quotes" },
-        { name: "Invoices", path: "/finance/invoices" },
-        { name: "Budget vs Actual", path: "/finance/budget" },
-        { name: "Profit Reports", path: "/finance/profit" },
+      label: "Finance",
+      items: [
+        // Pointing to src/pages/Finance
+        { id: 'Finance', icon: DollarSign, label: 'Financials', path: '/finance' },
+        { id: 'Reports', icon: TrendingUp, label: 'Profit Reports', path: '/finance/reports' },
       ]
     }
   ];
 
+  // Helper to check if a link is active
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <aside className="w-72 bg-white border-r min-h-screen p-4 hidden md:block">
-      <div className="mb-6 px-2">
-        <h1 className="text-2xl font-bold">Catering System</h1>
-        <p className="text-sm text-gray-500">Admin UI</p>
+    <aside className={`${sidebarOpen ? 'w-72' : 'w-20'} flex-shrink-0 flex flex-col border-r ${theme.border} ${theme.sidebarBg} transition-all duration-500 z-30 relative`}>
+      
+      {/* Toggle Button */}
+      <button 
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className={`absolute -right-3 top-10 w-6 h-6 rounded-full border ${theme.border} ${theme.cardBg} flex items-center justify-center z-50 hover:text-[#C9A25D] transition-colors`}
+      >
+        {sidebarOpen ? <ChevronLeft size={12} /> : <ChevronRight size={12} />}
+      </button>
+
+      {/* Logo */}
+      <div className={`h-24 flex items-center ${sidebarOpen ? 'px-8' : 'justify-center'}`}>
+        {sidebarOpen ? (
+          <div onClick={() => navigate('/')} className="cursor-pointer">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-[#C9A25D] font-bold block mb-1">Admin</span>
+            <h1 className="text-3xl font-serif tracking-wide uppercase">Mapo's</h1>
+          </div>
+        ) : (
+          <h1 className="text-2xl font-serif text-[#C9A25D] cursor-pointer" onClick={() => navigate('/')}>M</h1>
+        )}
       </div>
 
-      <nav className="text-sm">
-        {menu.map((group, i) => (
-          <div key={i}>
-            <SectionTitle>{group.name}</SectionTitle>
-
-            {group.children ? (
-              <div className="space-y-1">
-                {group.children.map((item, j) => (
-                  <NavLink
-                    key={j}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 ${isActive ? "bg-gray-100 font-medium" : "text-gray-700"}`
-                    }
-                  >
-                    {/* simple dot icon */}
-                    <span className="w-2 h-2 rounded-full bg-gray-400" />
-                    <span>{item.name}</span>
-                  </NavLink>
-                ))}
-              </div>
-            ) : (
-              <NavLink
-                to={group.path || "/"}
-                className="block px-3 py-2 rounded hover:bg-gray-100 text-gray-700"
-              >
-                {group.name}
-              </NavLink>
+      {/* Menu */}
+      <div className="flex-1 overflow-y-auto py-8 space-y-8 no-scrollbar">
+        {menuGroups.map((group, idx) => (
+          <div key={idx} className="px-4">
+            {sidebarOpen && (
+              <h3 className={`px-4 mb-4 text-[10px] uppercase tracking-[0.2em] font-medium ${theme.subText}`}>
+                {group.label}
+              </h3>
             )}
+            <div className="space-y-1">
+              {group.items.map((item) => (
+                <button
+                  key={item.id}
+                  // 3. Navigate on click instead of setting state
+                  onClick={() => navigate(item.path)}
+                  title={!sidebarOpen ? item.label : ''}
+                  className={`
+                    w-full flex items-center gap-4 px-4 py-3 rounded-md transition-all duration-300 group
+                    ${isActive(item.path) ? `bg-[#C9A25D]/10 text-[#C9A25D]` : `${theme.text} ${theme.hoverBg}`}
+                    ${!sidebarOpen ? 'justify-center' : ''}
+                  `}
+                >
+                  <item.icon strokeWidth={1.5} size={20} className={isActive(item.path) ? 'text-[#C9A25D]' : 'text-stone-400 group-hover:text-[#C9A25D]'} />
+                  {sidebarOpen && <span className="text-xs uppercase tracking-widest font-medium">{item.label}</span>}
+                  {sidebarOpen && isActive(item.path) && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#C9A25D]"></div>}
+                </button>
+              ))}
+            </div>
           </div>
         ))}
-      </nav>
+      </div>
+
+      {/* Profile */}
+      <div className={`p-6 border-t ${theme.border}`}>
+        <div className={`flex items-center gap-3 w-full ${!sidebarOpen ? 'justify-center' : ''}`}>
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-stone-200 grayscale hover:grayscale-0 transition-all cursor-pointer">
+             <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin" className="w-full h-full object-cover" />
+          </div>
+          {sidebarOpen && (
+            <div className="text-left overflow-hidden">
+              <p className="text-sm font-medium truncate">Chef Marco</p>
+              <p className={`text-[10px] uppercase tracking-wider ${theme.subText}`}>Head Admin</p>
+            </div>
+          )}
+        </div>
+      </div>
     </aside>
   );
-}
+};
+
+export default Sidebar;
